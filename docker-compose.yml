@@ -1,0 +1,17 @@
+version: "3.3"
+services:
+  kafka:
+    # https://hub.docker.com/r/landoop/fast-data-dev/
+    image: landoop/fast-data-dev:2.3.1
+    environment:
+      - ADV_HOST=localhost
+      - RUNTESTS=0
+      - SAMPLEDATA=0
+      - DISABLE_JMX=1
+    ports:
+      - 9092:9092 # broker
+      - 8081:8081 # schema registry
+      - 8082:8082 # Kafka REST proxy
+      - 8083:8083 # Kafka Connect distributed
+      - 2181:2181 # Zookeeper
+      - 3030:3030 # web console

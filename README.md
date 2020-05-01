@@ -15,4 +15,12 @@ TBD
 ### Retry
 TBD
 
+## Local env
+
+### run dependencies
+```bash
+docker-compose up -d
+```
+
+
 

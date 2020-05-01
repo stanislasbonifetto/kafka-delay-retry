@@ -1,39 +1,24 @@
 package it.stanislas.kafka.delay;
 
-public class KafkaConfig {
+import org.immutables.value.Value;
 
-    public static final String BOOTSTRAP_SERVERS = "localhost:9092";
-    public static final String SOURCE_TOPIC = "topic-a";
-    public static final String DESTINATION_TOPIC = "topic-b";
+@Value.Immutable
+public interface KafkaConfig {
 
-    private final String bootstrapSever;
-    private final String sourceTopic;
-    private final String destinationTopic;
+    String BOOTSTRAP_SERVERS = "localhost:9092";
+    String SOURCE_TOPIC = "topic-a";
+    String DESTINATION_TOPIC = "topic-b";
 
-    public KafkaConfig(String bootstrapSever, String sourceTopic, String destinationTopic) {
-        this.bootstrapSever = bootstrapSever;
-        this.sourceTopic = sourceTopic;
-        this.destinationTopic = destinationTopic;
+    String bootstrapSever();
+    String sourceTopic();
+    String destinationTopic();
+
+    static KafkaConfig buildDefault() {
+        return ImmutableKafkaConfig.builder()
+                .bootstrapSever(BOOTSTRAP_SERVERS)
+                .sourceTopic(SOURCE_TOPIC)
+                .destinationTopic(DESTINATION_TOPIC)
+                .build();
     }
 
-
-    public static KafkaConfig buildDefault() {
-        return new KafkaConfig(
-                BOOTSTRAP_SERVERS,
-                SOURCE_TOPIC,
-                DESTINATION_TOPIC
-        );
-    }
-
-    public String bootstrapSever() {
-        return bootstrapSever;
-    }
-
-    public String sourceTopic() {
-        return sourceTopic;
-    }
-
-    public String destinationTopic() {
-        return destinationTopic;
-    }
 }

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 @Value.Immutable
-public abstract class FoobarValue {
-    public abstract int foo();
-    public abstract String bar();
+public interface FoobarValue {
+    int foo();
+    String bar();
 }

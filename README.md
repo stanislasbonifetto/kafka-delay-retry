@@ -1,7 +1,11 @@
 # kafka-delay-retry
 
 ## Problem to solve
-In this project I would like to solve when you need to delay and action trigger from a kafka event or when you need to retry an action after x time.
+In this project I would like to solve two problems:
+1) do an action after x time or at point in time triggered from a kafka event
+2) retry an action, triggered from a kafka event, n time with with different delay on each retry.
+
+To do that I would like to explore if kafka stream could help me to solve those problems.
 
 ## Problem examples
 

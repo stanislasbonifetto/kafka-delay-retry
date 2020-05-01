@@ -6,6 +6,7 @@ plugins {
     kotlin("jvm") version "1.3.60"
 }
 
+val kafkaClientsVersion = "2.5.0"
 val immutablesVersion = "2.8.2"
 val junitVersion = "4.12"
 
@@ -19,14 +20,13 @@ repositories {
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
 
-    implementation("org.apache.kafka:kafka-clients:2.5.0")
-    implementation("org.apache.kafka:kafka-streams:2.5.0")
+    implementation("org.apache.kafka:kafka-clients:$kafkaClientsVersion")
+    implementation("org.apache.kafka:kafka-streams:$kafkaClientsVersion")
 
     annotationProcessor("org.immutables:value:$immutablesVersion")
     compileOnly("org.immutables:value:$immutablesVersion")
 
     testCompile("junit:junit:$junitVersion")
-
 }
 
 tasks.withType<KotlinCompile> {

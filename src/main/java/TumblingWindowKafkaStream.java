@@ -14,13 +14,15 @@ import org.apache.kafka.streams.kstream.*;
 import java.time.Duration;
 import java.util.*;
 
-/** Demonstrates tumbling windows.
+/**
+ * Demonstrates tumbling windows.
  *
  * @author Timothy Renner
  */
 public class TumblingWindowKafkaStream {
-    
-    /** Runs the streams program, writing to the "long-counts-all" topic.
+
+    /**
+     * Runs the streams program, writing to the "long-counts-all" topic.
      *
      * @param args Not used.
      */
@@ -47,14 +49,19 @@ public class TumblingWindowKafkaStream {
         final Serde<String> stringSerde = Serdes.String();
         final Serde<Long> longSerde = Serdes.Long();
 
-        KStream<String, String> longs = builder.stream("longs", Consumed.with(stringSerde, stringSerde));
+
+        KStream<Long, String> longs = builder.stream("longs", Consumed.with(longSerde, stringSerde));
+
+        KTable<Long, String> longCounts = longs.groupByKey()
+                .aggregate(() -> "", (key, value, aggregate) -> aggregate.concat(";").concat(value));
+
 
         // The tumbling windows will clear every ten seconds.
-        KTable<Windowed<String>, Long> longCounts =
-            longs
-                    .groupByKey()
-                    .windowedBy(TimeWindows.of(Duration.ofSeconds(10)))
-                    .count(Named.as("long-counts"));
+//        KTable<Windowed<Long>, Long> longCounts =
+//                longs
+//                        .groupBy((key, value) -> key)
+//                        .windowedBy(TimeWindows.of(Duration.ofSeconds(10)))
+//                        .count(Named.as("long-counts"));
 
         longCounts
                 .toStream()
@@ -73,16 +80,25 @@ public class TumblingWindowKafkaStream {
 
         KafkaProducer producer = new KafkaProducer<String, String>(producerConfig);
 
+        long time = System.currentTimeMillis();
+
         Timer timer = new Timer();
         timer.schedule(new TimerTask() {
             private int counter = 0;
+            private int delta = 0;
 
             @Override
             public void run() {
                 //                final UUID uuid = UUID.randomUUID();
 //                final String key = uuid.toString();
-                final String key = "my-key-a";
+
+                if (counter % 5 == 0) {
+                    delta += 5000;
+                }
+
+                final long key = time + delta;
                 final String message = "ping " + counter;
+
 
                 producer.send(new ProducerRecord("longs", key, message));
                 System.out.println("send message k:" + key + " v:" + message);
@@ -95,7 +111,7 @@ public class TumblingWindowKafkaStream {
     private static void startConsumer() {
         Thread t = new Thread(() -> {
             final Consumer<String, Long> consumer = createConsumer();
-            while(true) {
+            while (true) {
                 final ConsumerRecords<String, Long> records = consumer.poll(Duration.ofSeconds(1));
                 System.out.println("pull new messages");
                 records.forEach(r -> {
@@ -122,4 +138,4 @@ public class TumblingWindowKafkaStream {
         return consumer;
     }
 
-} // Close TumblingWindowKafkaStream.
+}

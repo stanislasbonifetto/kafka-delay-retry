@@ -24,7 +24,7 @@ public class ProcessorAtoB {
     public static KafkaStreams createProcessorStream(final KafkaConfig kafkaConfig) {
         final StreamsBuilder builder = new StreamsBuilder();
 
-        Properties config = new Properties();
+        final Properties config = new Properties();
         config.put(StreamsConfig.APPLICATION_ID_CONFIG, "processor-a-to-b-stream");
         config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.bootstrapSever());
         config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());

@@ -9,6 +9,7 @@ plugins {
 val kafkaClientsVersion = "2.5.0"
 val immutablesVersion = "2.8.2"
 val junitVersion = "4.12"
+val rxJavaVersion = "3.0.3"
 
 group = "it.stanislas"
 version = "1.0-SNAPSHOT"
@@ -22,6 +23,7 @@ dependencies {
 
     implementation("org.apache.kafka:kafka-clients:$kafkaClientsVersion")
     implementation("org.apache.kafka:kafka-streams:$kafkaClientsVersion")
+    implementation("io.reactivex.rxjava3:rxjava:$rxJavaVersion")
 
     annotationProcessor("org.immutables:value:$immutablesVersion")
     compileOnly("org.immutables:value:$immutablesVersion")

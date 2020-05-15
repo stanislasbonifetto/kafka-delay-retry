@@ -15,6 +15,8 @@ import java.util.Properties;
  */
 public class ConsumerB {
 
+    private final static String GROUP_ID = "consumer-b";
+
     private final Consumer<String, String> kafkaConsumer;
 
     private ConsumerB(Consumer<String, String> kafkaConsumer) {
@@ -30,7 +32,7 @@ public class ConsumerB {
     private static Consumer<String, String> createKafkaConsumer(final KafkaConfig kafkaConfig) {
         final Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.bootstrapSever());
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "consumer");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, GROUP_ID);
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 
@@ -47,7 +49,7 @@ public class ConsumerB {
         Thread t = new Thread(() -> {
             while(true) {
                 final ConsumerRecords<String, String> records = kafkaConsumer.poll(Duration.ofSeconds(1));
-                System.out.println("pull new messages");
+//                System.out.println("pull new messages");
                 records.forEach(r -> {
                     System.out.println("k:" + r.key() + " v:" + r.value());
                 });

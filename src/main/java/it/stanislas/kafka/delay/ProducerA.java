@@ -50,10 +50,8 @@ public class ProducerA {
                 .doOnNext(n -> {
                     final String key = n.toString();
                     final String value = n.toString();
-                    System.out.println("before send k:" + key + " v:" + value);
                     final Future<RecordMetadata> recordMetadataFeature =  kafkaProducer.send(new ProducerRecord(topic, key,value));
-                    recordMetadataFeature.get();
-                    System.out.println("send k:" + key + " v:" + value);
+//                    System.out.println("send k:" + key + " v:" + value);
                 })
                 .subscribe();
     }

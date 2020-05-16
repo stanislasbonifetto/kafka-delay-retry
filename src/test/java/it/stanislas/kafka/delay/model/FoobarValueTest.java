@@ -1,7 +1,8 @@
 package it.stanislas.kafka.delay.model;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FoobarValueTest {
 
@@ -12,7 +13,7 @@ public class FoobarValueTest {
                 .bar("Bar")
                 .build();
 
-        Assert.assertEquals(2, value.foo());
-        Assert.assertEquals("Bar", value.bar());
+        assertEquals(2, value.foo());
+        assertEquals("Bar", value.bar());
     }
 }

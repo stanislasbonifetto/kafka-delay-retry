@@ -9,6 +9,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringSerializer;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -48,11 +50,14 @@ public class ProducerA {
     }
 
     public void start() {
+
         Observable
                 .interval(1, TimeUnit.SECONDS)
+                .take(5)
                 .doOnNext(n -> {
                     final String key = n.toString();
-                    final MessageA value = new MessageA(n.toString());
+                    final Instant current = Instant.now().plus(5 * n, ChronoUnit.SECONDS);
+                    final MessageA value = new MessageA(n.toString(), current.toEpochMilli());
                     final Future<RecordMetadata> recordMetadataFeature = kafkaProducer.send(new ProducerRecord(topic, key, value));
 //                    System.out.println("send k:" + key + " v:" + value);
                 })

@@ -13,6 +13,7 @@ val rxJavaVersion = "3.0.3"
 val junitJupiterVersion = "5.6.2"
 val testcontainersVersion = "1.14.1"
 val awaitilityVersion = "4.0.2"
+val jacksonVersion = "2.9.2-SNAPSHOT"
 
 group = "it.stanislas"
 version = "1.0-SNAPSHOT"
@@ -27,6 +28,9 @@ dependencies {
     implementation("org.apache.kafka:kafka-clients:$kafkaClientsVersion")
     implementation("org.apache.kafka:kafka-streams:$kafkaClientsVersion")
     implementation("io.reactivex.rxjava3:rxjava:$rxJavaVersion")
+//    implementation("com.fasterxml.jackson.module:jackson-module-parameter-names:$jacksonVersion")
+//    implementation("com.fasterxml.jackson.module:jackson-datatype-jdk8:$jacksonVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0")
 
     annotationProcessor("org.immutables:value:$immutablesVersion")
     compileOnly("org.immutables:value:$immutablesVersion")

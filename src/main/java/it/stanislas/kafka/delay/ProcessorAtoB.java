@@ -43,9 +43,10 @@ public class ProcessorAtoB {
 
         processorStream
                 .mapValues(v -> {
-                    final MessageB messageB = new MessageB(Instant.now().getEpochSecond(), v.getText());
+                    final MessageB messageB = new MessageB(v.getFireTime(), v.getText());
                     return messageB;
                 })
+
                 .to(kafkaConfig.destinationTopic());
 
         final KafkaStreams streams = new KafkaStreams(builder.build(), config);

@@ -1,5 +1,7 @@
 package it.stanislas.kafka.delay;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import it.stanislas.kafka.delay.model.MessageB;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -14,7 +16,6 @@ import java.util.Properties;
  * consume messages from topic-b and print
  */
 public class ConsumerB {
-
     private final static String GROUP_ID = "consumer-b";
 
     private final Consumer<String, String> kafkaConsumer;

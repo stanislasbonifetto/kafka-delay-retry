@@ -1,8 +1,20 @@
 package it.stanislas.kafka.delay.model;
 
-public class MessageB {
-    final private Long messageATimestamp;
-    final private String text;
+import it.stanislas.kafka.delay.JSONSerdeCompatible;
+
+public class MessageB implements JSONSerdeCompatible {
+    private Long messageATimestamp;
+    private String text;
+
+    public Long getMessageATimestamp() {
+        return messageATimestamp;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public MessageB() {}
 
     public MessageB(Long messageATimestamp, String text) {
         this.messageATimestamp = messageATimestamp;

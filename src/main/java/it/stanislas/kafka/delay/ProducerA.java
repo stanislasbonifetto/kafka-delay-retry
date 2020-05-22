@@ -1,6 +1,8 @@
 package it.stanislas.kafka.delay;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.reactivex.rxjava3.core.Observable;
+import it.stanislas.kafka.delay.model.MessageA;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -15,6 +17,7 @@ import java.util.concurrent.TimeUnit;
  * produce a message A in topic-a
  */
 public class ProducerA {
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     private final KafkaProducer<String ,String> kafkaProducer;
     private final String topic;
@@ -49,8 +52,9 @@ public class ProducerA {
                 .interval(1, TimeUnit.SECONDS)
                 .doOnNext(n -> {
                     final String key = n.toString();
-                    final String value = n.toString();
-                    final Future<RecordMetadata> recordMetadataFeature =  kafkaProducer.send(new ProducerRecord(topic, key,value));
+                    final MessageA value = new MessageA(n.toString());
+                    final String MessageAJson = OBJECT_MAPPER.writeValueAsString(value);
+                    final Future<RecordMetadata> recordMetadataFeature =  kafkaProducer.send(new ProducerRecord(topic, key,MessageAJson));
 //                    System.out.println("send k:" + key + " v:" + value);
                 })
                 .subscribe();

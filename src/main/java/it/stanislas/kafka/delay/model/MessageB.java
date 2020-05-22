@@ -20,4 +20,12 @@ public class MessageB implements JSONSerdeCompatible {
         this.messageATimestamp = messageATimestamp;
         this.text = text;
     }
+
+    @Override
+    public String toString() {
+        return "MessageB{" +
+                "messageATimestamp=" + messageATimestamp +
+                ", text='" + text + '\'' +
+                '}';
+    }
 }

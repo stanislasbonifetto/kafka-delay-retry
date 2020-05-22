@@ -19,10 +19,10 @@ import java.util.concurrent.TimeUnit;
 public class ProducerA {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-    private final KafkaProducer<String ,String> kafkaProducer;
+    private final KafkaProducer<String, MessageA> kafkaProducer;
     private final String topic;
 
-    private ProducerA(final KafkaProducer<String ,String> kafkaProducer,final String topic) {
+    private ProducerA(final KafkaProducer<String, MessageA> kafkaProducer, final String topic) {
         this.kafkaProducer = kafkaProducer;
         this.topic = topic;
     }
@@ -37,13 +37,13 @@ public class ProducerA {
         return new ProducerA(createKafkaProducer(kafkaConfig), kafkaConfig.sourceTopic());
     }
 
-    private static KafkaProducer<String ,String> createKafkaProducer(final KafkaConfig kafkaConfig) {
+    private static KafkaProducer<String, MessageA> createKafkaProducer(final KafkaConfig kafkaConfig) {
         final Properties producerConfig = new Properties();
         producerConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.bootstrapSever());
         producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JSONSerde.class.getName());
 
-        final KafkaProducer kafkaProducer = new KafkaProducer<String, String>(producerConfig);
+        final KafkaProducer kafkaProducer = new KafkaProducer<String, MessageA>(producerConfig);
         return kafkaProducer;
     }
 
@@ -53,8 +53,7 @@ public class ProducerA {
                 .doOnNext(n -> {
                     final String key = n.toString();
                     final MessageA value = new MessageA(n.toString());
-                    final String MessageAJson = OBJECT_MAPPER.writeValueAsString(value);
-                    final Future<RecordMetadata> recordMetadataFeature =  kafkaProducer.send(new ProducerRecord(topic, key,MessageAJson));
+                    final Future<RecordMetadata> recordMetadataFeature = kafkaProducer.send(new ProducerRecord(topic, key, value));
 //                    System.out.println("send k:" + key + " v:" + value);
                 })
                 .subscribe();

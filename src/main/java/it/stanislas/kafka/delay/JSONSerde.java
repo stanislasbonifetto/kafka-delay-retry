@@ -9,7 +9,7 @@ import org.apache.kafka.common.serialization.Serializer;
 import java.io.IOException;
 import java.util.Map;
 
-public class JSONSerde<T> implements Serializer<T>, Deserializer<T>, Serde<T> {
+public class JSONSerde<T extends JSONSerdeCompatible> implements Serializer<T>, Deserializer<T>, Serde<T> {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Override

@@ -1,6 +1,5 @@
 package it.stanislas.kafka.delay;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import it.stanislas.kafka.delay.model.MessageA;
 import it.stanislas.kafka.delay.model.MessageB;
@@ -32,28 +31,20 @@ public class ProcessorAtoB {
 
         final Serde<String> stringSerde = Serdes.String();
         final Serde<MessageA> messageASerde = new JSONSerde<>();
-        final Serde<MessageB> messageBSerde = new JSONSerde<>();
 
         final Properties config = new Properties();
         config.put(StreamsConfig.APPLICATION_ID_CONFIG, "processor-a-to-b-stream");
         config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaConfig.bootstrapSever());
         config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
-        config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+        config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, JSONSerde.class);
 
-        KStream<String, String> processorStream = builder
-                .stream(kafkaConfig.sourceTopic(), Consumed.with(stringSerde, stringSerde));
+        KStream<String, MessageA> processorStream = builder
+                .stream(kafkaConfig.sourceTopic(), Consumed.with(stringSerde, messageASerde));
 
         processorStream
                 .mapValues(v -> {
-                    try {
-                        final MessageA messageA = OBJECT_MAPPER.readValue(v, MessageA.class);
-                        final MessageB messageB = new MessageB(Instant.now().getEpochSecond(), messageA.getText());
-                        final String messageBJson = OBJECT_MAPPER.writeValueAsString(messageB);
-                        return messageBJson;
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
-                    }
-                    return "";
+                    final MessageB messageB = new MessageB(Instant.now().getEpochSecond(), v.getText());
+                    return messageB;
                 })
                 .to(kafkaConfig.destinationTopic());
 

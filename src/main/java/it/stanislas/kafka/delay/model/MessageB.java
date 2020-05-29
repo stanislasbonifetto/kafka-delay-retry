@@ -2,6 +2,7 @@ package it.stanislas.kafka.delay.model;
 
 import it.stanislas.kafka.delay.JSONSerdeCompatible;
 
+//FIXME: use Immutable
 public class MessageB implements JSONSerdeCompatible {
     private Long messageATimestamp;
     private String text;

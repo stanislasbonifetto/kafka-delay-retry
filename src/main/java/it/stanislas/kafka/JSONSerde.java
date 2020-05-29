@@ -1,4 +1,4 @@
-package it.stanislas.kafka.delay;
+package it.stanislas.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

@@ -1,8 +1,8 @@
-package it.stanislas.kafka.delay;
+package it.stanislas.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.reactivex.rxjava3.core.Observable;
-import it.stanislas.kafka.delay.model.MessageA;
+import it.stanislas.kafka.model.MessageA;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;

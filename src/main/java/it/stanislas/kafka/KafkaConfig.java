@@ -1,4 +1,4 @@
-package it.stanislas.kafka.delay;
+package it.stanislas.kafka;
 
 import org.immutables.value.Value;
 

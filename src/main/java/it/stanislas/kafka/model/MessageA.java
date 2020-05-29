@@ -1,9 +1,9 @@
-package it.stanislas.kafka.delay.model;
+package it.stanislas.kafka.model;
 
-import it.stanislas.kafka.delay.JSONSerdeCompatible;
+import it.stanislas.kafka.JSONSerdeCompatible;
 
 //FIXME: use Immutable
-public class MessageA implements JSONSerdeCompatible {
+public class MessageA extends Message implements JSONSerdeCompatible {
 
     private String text;
 

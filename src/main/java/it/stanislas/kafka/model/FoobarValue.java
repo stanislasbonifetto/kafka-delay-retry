@@ -1,9 +1,6 @@
-package it.stanislas.kafka.delay.model;
+package it.stanislas.kafka.model;
 
 import org.immutables.value.Value;
-
-import java.util.List;
-import java.util.Set;
 
 @Value.Immutable
 public interface FoobarValue {

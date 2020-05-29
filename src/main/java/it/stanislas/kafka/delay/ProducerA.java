@@ -59,7 +59,7 @@ public class ProducerA {
                     final Instant current = Instant.now().plus(5 * n, ChronoUnit.SECONDS);
                     final MessageA value = new MessageA(n.toString(), current.toEpochMilli());
                     final Future<RecordMetadata> recordMetadataFeature = kafkaProducer.send(new ProducerRecord(topic, key, value));
-//                    System.out.println("send k:" + key + " v:" + value);
+                    System.out.println("send k:" + key + " v:" + value + " fireTime:" + Instant.ofEpochMilli(value.getFireTime()).toString());
                 })
                 .subscribe();
     }

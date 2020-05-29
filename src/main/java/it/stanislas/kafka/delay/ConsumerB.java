@@ -10,6 +10,8 @@ import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
 import java.time.Duration;
+import java.time.Instant;
+import java.time.Period;
 import java.util.Collections;
 import java.util.Properties;
 
@@ -52,7 +54,9 @@ public class ConsumerB {
             while(true) {
                 final ConsumerRecords<String, MessageB> records = kafkaConsumer.poll(Duration.ofSeconds(1));
                 records.forEach(r -> {
-                    System.out.println("k:" + r.key() + " v:" + r.value());
+                    final Instant fireTime = Instant.ofEpochMilli(r.value().getMessageATimestamp());
+                    final Duration deltaFromNow = Duration.between(Instant.now(), fireTime);
+                    System.out.println("k:" + r.key() + " v:" + r.value() + " fireTime:" + fireTime + " deltaTime:" + deltaFromNow);
                 });
             }
         });

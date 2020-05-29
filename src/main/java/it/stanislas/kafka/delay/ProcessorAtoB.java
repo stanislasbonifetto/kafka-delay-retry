@@ -1,24 +1,24 @@
 package it.stanislas.kafka.delay;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import it.stanislas.kafka.delay.model.MessageA;
 import it.stanislas.kafka.delay.model.MessageB;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
-import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
-import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.Topology;
+import org.apache.kafka.streams.state.KeyValueStore;
+import org.apache.kafka.streams.state.StoreBuilder;
+import org.apache.kafka.streams.state.Stores;
 
-import java.time.Instant;
 import java.util.Properties;
 
 /***
  * with kafka stream consume message A from topic-a and produce message B to topic-b
  */
 public class ProcessorAtoB {
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+    private static final String SOURCE_TOPIC_NAME = "SourceTopic";
+    private static final String PROCESSOR_NAME = "MessageAProcessor";
 
     public static KafkaStreams createAndStart(final KafkaConfig kafkaConfig) {
         final KafkaStreams kafkaStreams = createProcessorStream(kafkaConfig);
@@ -27,10 +27,9 @@ public class ProcessorAtoB {
     }
 
     public static KafkaStreams createProcessorStream(final KafkaConfig kafkaConfig) {
-        final StreamsBuilder builder = new StreamsBuilder();
 
         final Serde<String> stringSerde = Serdes.String();
-        final Serde<MessageA> messageASerde = new JSONSerde<>();
+        final Serde<MessageB> messageBSerde = new JSONSerde<>();
 
         final Properties config = new Properties();
         config.put(StreamsConfig.APPLICATION_ID_CONFIG, "processor-a-to-b-stream");
@@ -38,18 +37,19 @@ public class ProcessorAtoB {
         config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, JSONSerde.class);
 
-        KStream<String, MessageA> processorStream = builder
-                .stream(kafkaConfig.sourceTopic(), Consumed.with(stringSerde, messageASerde));
+        StoreBuilder<KeyValueStore<String, MessageB>> messageStore = Stores.keyValueStoreBuilder(
+                Stores.inMemoryKeyValueStore("Messages"),
+                stringSerde,
+                messageBSerde);
 
-        processorStream
-                .mapValues(v -> {
-                    final MessageB messageB = new MessageB(v.getFireTime(), v.getText());
-                    return messageB;
-                })
 
-                .to(kafkaConfig.destinationTopic());
+        Topology builder = new Topology();
+        builder.addSource(SOURCE_TOPIC_NAME, kafkaConfig.sourceTopic())
+                .addProcessor(PROCESSOR_NAME, MessageAProcessor::new, SOURCE_TOPIC_NAME)
+                .addStateStore(messageStore, PROCESSOR_NAME)
+                .addSink("Sink", kafkaConfig.destinationTopic(), PROCESSOR_NAME);
 
-        final KafkaStreams streams = new KafkaStreams(builder.build(), config);
+        final KafkaStreams streams = new KafkaStreams(builder, config);
 
         return streams;
     }

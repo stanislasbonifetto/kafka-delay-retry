@@ -33,8 +33,8 @@ import java.util.stream.IntStream;
 
 @Testcontainers
 public class DelayWithStreamsTest {
-    @ClassRule
-    public final static KafkaContainer kafka = new KafkaContainer();
+//    @ClassRule
+//    public final static KafkaContainer kafka = new KafkaContainer();
 
     @Test
     public void delay_with_streams() {
@@ -65,6 +65,7 @@ public class DelayWithStreamsTest {
 
         kafkaStreams.start();
 
+
         Observable
                 .interval(1, TimeUnit.SECONDS)
                 .doOnNext(n -> {
@@ -89,9 +90,9 @@ public class DelayWithStreamsTest {
                 .subscribe();
 
 
-//        try {
-//            Thread.sleep( 5 * 1000);
-//        } catch (Exception e) {}
+        try {
+            Thread.sleep( 1 * 1000);
+        } catch (Exception e) {}
 
         //when
         Observable

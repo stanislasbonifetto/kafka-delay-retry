@@ -6,8 +6,10 @@ import it.stanislas.kafka.delay.streamjoin.DelayProducer;
 import it.stanislas.kafka.delay.streamjoin.DelayStream;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.junit.ClassRule;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.Duration;
@@ -23,12 +25,12 @@ import static org.awaitility.Awaitility.await;
 
 @Testcontainers
 public class DelayWithStreamsTest {
-//    @ClassRule
-//    public final static KafkaContainer kafka = new KafkaContainer();
+    @ClassRule
+    public final static KafkaContainer kafka = new KafkaContainer();
 
     //given
-//        final String bootstrapServers = kafka.getBootstrapServers();
-    final String bootstrapServers = "localhost:9092";
+    final String bootstrapServers = kafka.getBootstrapServers();
+//    final String bootstrapServers = "localhost:9092";
 
     // topic-delay
     final String delayTopicName = "topic-delay";

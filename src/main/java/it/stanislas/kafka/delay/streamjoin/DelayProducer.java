@@ -29,9 +29,9 @@ public class DelayProducer {
         return new DelayProducer(buildProducer(bootstrapServers), delayTopicName);
     }
 
-    public void sendAMessageEachMinute() {
+    public void sendAMessageDelayedOneMinutesEachThenSeconds() {
         Observable
-                .interval(1, TimeUnit.MINUTES)
+                .interval(10, TimeUnit.SECONDS)
                 .doOnNext(n -> {
 //                .doOnNext(t -> {
 //                    IntStream.range(0, 10)

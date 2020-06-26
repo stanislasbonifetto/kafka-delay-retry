@@ -41,7 +41,6 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:$testcontainersVersion")
     testImplementation("org.testcontainers:kafka:$testcontainersVersion")
     testImplementation("org.awaitility:awaitility:$awaitilityVersion")
-
 }
 
 tasks.withType<KotlinCompile> {

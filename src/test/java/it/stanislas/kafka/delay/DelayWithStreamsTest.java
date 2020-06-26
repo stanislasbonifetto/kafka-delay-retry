@@ -4,17 +4,23 @@ import io.reactivex.rxjava3.core.Observable;
 import it.stanislas.kafka.delay.streamjoin.ClockProducer;
 import it.stanislas.kafka.delay.streamjoin.DelayProducer;
 import it.stanislas.kafka.delay.streamjoin.DelayStream;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import org.junit.ClassRule;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.apache.kafka.streams.StreamsConfig;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.KafkaContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.UUID;
@@ -25,74 +31,75 @@ import static org.awaitility.Awaitility.await;
 
 @Testcontainers
 public class DelayWithStreamsTest {
-    @ClassRule
-    public final static KafkaContainer kafka = new KafkaContainer();
 
-    //given
-    final String bootstrapServers = kafka.getBootstrapServers();
-//    final String bootstrapServers = "localhost:9092";
+    @Container
+    final static KafkaContainer KAFKA_CONTAINER = new KafkaContainer();
+
+    static String bootstrapServers;
+    //    final String bootstrapServers = "localhost:9092";
 
     // topic-delay
-    final String delayTopicName = "topic-delay";
+    final static String DELAY_TOPIC_NAME = "topic-delay";
 
     // topic-clock
-    final String clockTopicName = "topic-clock";
+    final static String CLOCK_TOPIC_NAME = "topic-clock";
 
     // topic-fired
-    final String firedTopicName = "topic-fired";
+    final static String FIRED_TOPIC_NAME = "topic-fired";
 
-    final DelayStream delayStream = DelayStream.buildAndStart(bootstrapServers, delayTopicName, clockTopicName, firedTopicName);
+    @BeforeAll
+    public static void setup() {
+        //given
+        createTopics();
 
-    final ClockProducer clockProducer = ClockProducer.buildAndStart(bootstrapServers, clockTopicName);
+    }
 
-    final DelayProducer delayProducer = DelayProducer.build(bootstrapServers, delayTopicName);
+    private static void createTopics() {
+        bootstrapServers = KAFKA_CONTAINER.getBootstrapServers();
 
-    final Consumer firedConsumer = buildKafkaConsumer(bootstrapServers, firedTopicName);
+        final Properties config = new Properties();
+        config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+
+        final AdminClient adminClient = AdminClient.create(config);
+        final NewTopic delayTopic = new NewTopic(DELAY_TOPIC_NAME, 1, (short)1);
+        final NewTopic clockTopic = new NewTopic(CLOCK_TOPIC_NAME, 1, (short)1);
+        final NewTopic firedTopic = new NewTopic(FIRED_TOPIC_NAME, 1, (short)1);
+
+        adminClient.createTopics(Arrays.asList(delayTopic, clockTopic, firedTopic));
+        adminClient.close();
+    }
+
 
     @Test
     public void delay_a_message() {
 
+        //given
+        final DelayStream delayStream = DelayStream.buildAndStart(bootstrapServers, DELAY_TOPIC_NAME, CLOCK_TOPIC_NAME, FIRED_TOPIC_NAME);
+
+        final ClockProducer clockProducer = ClockProducer.buildAndStart(bootstrapServers, CLOCK_TOPIC_NAME);
+
+        final DelayProducer delayProducer = DelayProducer.build(bootstrapServers, DELAY_TOPIC_NAME);
+
+        final Consumer firedConsumer = buildKafkaConsumer(bootstrapServers, FIRED_TOPIC_NAME);
+
         //when
+        // I fire a message with 10s delay
         final Instant now = Instant.now();
         final Instant fireAt = now.plus(10, ChronoUnit.SECONDS);
-        final String message = "my-message";
+        final String message = "my-message-" + DateTimeFormatter.ISO_INSTANT.format(fireAt);
         delayProducer.sendAt(message, fireAt);
 
         //then
+        // I consume the fired topic to check if the message is fired and check the timestamp of the message
         await().atMost(1, MINUTES).until(() -> {
             final ConsumerRecords<String, String> records = firedConsumer.poll(Duration.ofSeconds(1));
             records.forEach(r -> System.out.println("fired k:" + r.key() + " v:" + r.value()));
-            return assertRecord(records, message, fireAt);
+            return assertMessageIsFiredAtTheRightTime(records, message, fireAt);
         });
 
     }
 
-    @Test
-    @Ignore
-    public void delay_messages() {
-
-        //when
-        delayProducer.sendAMessageEachMinute();
-
-        //then
-        Observable
-                .interval(1, TimeUnit.SECONDS)
-                .doOnNext(n -> {
-                    final ConsumerRecords<String, String> records = firedConsumer.poll(Duration.ofSeconds(1));
-                    records.forEach(r -> {
-                        System.out.println("fired k:" + r.key() + " v:" + r.value());
-                    });
-                })
-                .subscribe();
-
-
-        try {
-            Thread.sleep(10 * 60 * 1000);
-        } catch (Exception e) {}
-
-    }
-
-    private static Boolean assertRecord(ConsumerRecords<String, String> records, final String expectedKey, final Instant expectedAt) {
+    private static Boolean assertMessageIsFiredAtTheRightTime(ConsumerRecords<String, String> records, final String expectedKey, final Instant expectedAt) {
         if(records.count() <= 0) return false;
         final ConsumerRecord record = records.iterator().next();
 
@@ -102,7 +109,7 @@ public class DelayWithStreamsTest {
 
         final long diffFireTimeInSeconds = diffFireTime.getSeconds();
 
-//        System.out.println("diff :" + diffFireTime.getSeconds());
+        System.out.println("diff :" + diffFireTime.getSeconds());
 
         final boolean keyIsEqual = record.key().equals(expectedKey);
 
@@ -111,6 +118,38 @@ public class DelayWithStreamsTest {
 //        System.out.println("keyIsEqual :" + keyIsEqual + " isFireOnTime: "+ isFireOnTime);
 
         return keyIsEqual && isFireOnTime;
+    }
+
+    @Test
+    @Disabled //this test is to just run and print it doesn't any validation
+    public void delay_messages() {
+
+        //given
+        final DelayStream delayStream = DelayStream.buildAndStart(bootstrapServers, DELAY_TOPIC_NAME, CLOCK_TOPIC_NAME, FIRED_TOPIC_NAME);
+
+        final ClockProducer clockProducer = ClockProducer.buildAndStart(bootstrapServers, CLOCK_TOPIC_NAME);
+
+        final DelayProducer delayProducer = DelayProducer.build(bootstrapServers, DELAY_TOPIC_NAME);
+
+        final Consumer firedConsumer = buildKafkaConsumer(bootstrapServers, FIRED_TOPIC_NAME);
+
+        //when
+        delayProducer.sendAMessageDelayedOneMinutesEachThenSeconds();
+
+        //then
+        Observable
+                .interval(1, TimeUnit.SECONDS)
+                .doOnNext(n -> {
+                    final ConsumerRecords<String, String> records = firedConsumer.poll(Duration.ofSeconds(1));
+                    records.forEach(r -> System.out.println("fired k:" + r.key() + " v:" + r.value()));
+                })
+                .subscribe();
+
+
+        try {
+            Thread.sleep(10 * 60 * 1000);
+        } catch (Exception e) {}
+
     }
 
     private Consumer<String, String> buildKafkaConsumer(final String bootstrapServers, final String topicName) {

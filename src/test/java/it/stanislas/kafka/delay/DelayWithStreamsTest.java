@@ -39,13 +39,13 @@ public class DelayWithStreamsTest {
     //    final String bootstrapServers = "localhost:9092";
 
     // topic-delay
-    final static String DELAY_TOPIC_NAME = "topic-delay";
+    final static String DELAY_TOPIC_NAME = "delay";
 
     // topic-clock
-    final static String CLOCK_TOPIC_NAME = "topic-clock";
+    final static String CLOCK_TOPIC_NAME = "clock";
 
     // topic-fired
-    final static String FIRED_TOPIC_NAME = "topic-fired";
+    final static String FIRED_TOPIC_NAME = "fired";
 
     @BeforeAll
     public static void setup() {

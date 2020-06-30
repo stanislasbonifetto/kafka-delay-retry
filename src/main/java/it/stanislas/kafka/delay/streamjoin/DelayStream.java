@@ -9,6 +9,10 @@ import org.apache.kafka.streams.kstream.StreamJoined;
 
 import java.time.Duration;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DelayStream {
 
@@ -50,7 +54,12 @@ public class DelayStream {
                     JoinWindows.of(Duration.ofDays(1)),
                     StreamJoined.with(Serdes.String(), Serdes.String(), Serdes.String())
                 )
-                .map((key, value) -> new KeyValue<>(value, key))
+                .map((key, value) -> {
+                    String[] values = value.split(":");
+                    final String delayKey = values[0];
+                    final String delayMessage = values[1];
+                    return new KeyValue<>(delayKey, delayMessage);
+                })
                 .to(firedTopicName);
 
         final Topology topology = builder.build();

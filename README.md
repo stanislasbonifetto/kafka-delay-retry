@@ -21,8 +21,8 @@ The idea is to have 3 topics:
 
 | topic | key | value | key - > value example |
 | --- | --- | --- | --- |
-| clock | string date formart `yyyyMMddHHmmss` | string date formart `yyyyMMddHHmmss` | `202006101558` -> `202006101558` |
-| delay | string date formart `yyyyMMddHHmmss` | string key:value | 202006101558 -> `my_key_1:my_message_1` |
+| clock | string date format `yyyyMMddHHmmss` | string date format `yyyyMMddHHmmss` | `202006101558` -> `202006101558` |
+| delay | string date format `yyyyMMddHHmmss` | string key:value | 202006101558 -> `my_key_1:my_message_1` |
 | fired | string | string | `my_key_1` -> `my_message_1` |
 
 ### Retry

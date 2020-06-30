@@ -35,8 +35,8 @@ public class DelayWithStreamsTest {
     @Container
     final static KafkaContainer KAFKA_CONTAINER = new KafkaContainer();
 
-    static String bootstrapServers;
-    //    final String bootstrapServers = "localhost:9092";
+  static String bootstrapServers;
+//    final static String bootstrapServers = "localhost:9092";
 
     // topic-delay
     final static String DELAY_TOPIC_NAME = "delay";
@@ -86,7 +86,11 @@ public class DelayWithStreamsTest {
         // I fire a message with 10s delay
         final Instant now = Instant.now();
         final Instant fireAt = now.plus(10, ChronoUnit.SECONDS);
-        final String message = "my-message-" + DateTimeFormatter.ISO_INSTANT.format(fireAt);
+        final String messageKey = "my-key";
+        final String messageValue = "my-value";
+
+        // I set the message value with format "key:value"
+        final String message = messageKey + ":" + messageValue;
         delayProducer.sendAt(message, fireAt);
 
         //then
@@ -94,12 +98,12 @@ public class DelayWithStreamsTest {
         await().atMost(1, MINUTES).until(() -> {
             final ConsumerRecords<String, String> records = firedConsumer.poll(Duration.ofSeconds(1));
             records.forEach(r -> System.out.println("fired k:" + r.key() + " v:" + r.value()));
-            return assertMessageIsFiredAtTheRightTime(records, message, fireAt);
+            return assertMessageIsFiredAtTheRightTime(records, messageKey, messageValue, fireAt);
         });
 
     }
 
-    private static Boolean assertMessageIsFiredAtTheRightTime(ConsumerRecords<String, String> records, final String expectedKey, final Instant expectedAt) {
+    private static Boolean assertMessageIsFiredAtTheRightTime(ConsumerRecords<String, String> records, final String expectedKey,final String expectedValue, final Instant expectedAt) {
         if(records.count() <= 0) return false;
         final ConsumerRecord record = records.iterator().next();
 
@@ -112,12 +116,13 @@ public class DelayWithStreamsTest {
         System.out.println("diff :" + diffFireTime.getSeconds());
 
         final boolean keyIsEqual = record.key().equals(expectedKey);
+        final boolean valueIsEqual = record.value().equals(expectedValue);
 
         final boolean isFireOnTime = diffFireTimeInSeconds > -2 && diffFireTimeInSeconds < 2;
 
-//        System.out.println("keyIsEqual :" + keyIsEqual + " isFireOnTime: "+ isFireOnTime);
+//        System.out.println("keyIsEqual :" + keyIsEqual + " valueIsEqual :" + valueIsEqual + " isFireOnTime: "+ isFireOnTime);
 
-        return keyIsEqual && isFireOnTime;
+        return keyIsEqual && valueIsEqual && isFireOnTime;
     }
 
     @Test

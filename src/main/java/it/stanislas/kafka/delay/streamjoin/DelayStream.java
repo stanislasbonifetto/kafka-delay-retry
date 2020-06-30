@@ -34,7 +34,7 @@ public class DelayStream {
     protected static KafkaStreams buildStream(final String bootstrapServers, final String delayTopicName, final String tickTocTopicName, final String firedTopicName) {
 
         final Properties config = new Properties();
-        config.put(StreamsConfig.APPLICATION_ID_CONFIG, "processor-a-to-b-stream");
+        config.put(StreamsConfig.APPLICATION_ID_CONFIG, "delay-stream");
         config.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         config.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         config.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());

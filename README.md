@@ -25,6 +25,19 @@ The idea is to have 3 topics:
 | delay | string date format `yyyyMMddHHmmss` | string key:value | 202006101558 -> `my_key_1:my_message_1` |
 | fired | string | string | `my_key_1` -> `my_message_1` |
 
+Class to look in to: 
+ * [DelayStream.java](src/main/java/it/stanislas/kafka/delay/streamjoin/DelayStream.java) Stream definition
+ * [ClockProducer.java](src/main/java/it/stanislas/kafka/delay/streamjoin/ClockProducer.java) clock producer that emit an event every second
+ * [DelayWithStreamsTest.java](src/test/java/it/stanislas/kafka/delay/DelayWithStreamsTest.java) Test on the solution
+
+The solution has some limitation.
+
+1. The granularity of when we can send an event is by second
+2. If we fire a lot of messages at some point, like trigger millions of messages at 8:00:00 am we create an hot partition because the all delayed messages will be stored in the same partition because they have the same key. The only way to workaround this is to spread the events on different point in time.
+3. We are windowing the join of a day, we can delay event only now + 1 day. We could extend the window but it could create performance issue. 
+
+I didn't test the performance.
+
 ### Retry
 TBD
 

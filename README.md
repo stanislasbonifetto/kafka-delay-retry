@@ -49,7 +49,6 @@ docker-compose up -d
 ```
 
 ## TODO
-* refactoring the `JSONSerde` and `JSONSerdeCompatible` implementation maybe with a type class
-
+* refactoring the streamjoin solution to allow to be used as library
 
 

@@ -1,6 +1,6 @@
 package it.stanislas.kafka.delay.streamjoin;
 
-import it.stanislas.kafka.delay.model.MessageA;
+import it.stanislas.kafka.delay.processor.model.MessageA;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
@@ -13,7 +13,7 @@ public class ProducerFactory {
         producerConfig.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         producerConfig.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         producerConfig.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        final KafkaProducer kafkaProducer = new KafkaProducer<String, MessageA>(producerConfig);
+        final KafkaProducer kafkaProducer = new KafkaProducer<String, String>(producerConfig);
         return kafkaProducer;
     }
 }

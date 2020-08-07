@@ -1,6 +1,7 @@
 package it.stanislas.kafka.delay;
 
 
+import it.stanislas.kafka.delay.processor.KafkaConfig;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertEquals;

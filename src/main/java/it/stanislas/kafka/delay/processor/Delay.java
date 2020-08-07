@@ -1,4 +1,4 @@
-package it.stanislas.kafka.delay;
+package it.stanislas.kafka.delay.processor;
 
 import org.apache.kafka.streams.KafkaStreams;
 

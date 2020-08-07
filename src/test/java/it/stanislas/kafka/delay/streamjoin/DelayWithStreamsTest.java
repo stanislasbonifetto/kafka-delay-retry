@@ -1,4 +1,4 @@
-package it.stanislas.kafka.delay;
+package it.stanislas.kafka.delay.streamjoin;
 
 import io.reactivex.rxjava3.core.Observable;
 import it.stanislas.kafka.delay.streamjoin.ClockProducer;

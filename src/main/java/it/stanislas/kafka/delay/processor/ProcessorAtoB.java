@@ -1,6 +1,6 @@
-package it.stanislas.kafka.delay;
+package it.stanislas.kafka.delay.processor;
 
-import it.stanislas.kafka.delay.model.MessageB;
+import it.stanislas.kafka.delay.processor.model.MessageB;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;

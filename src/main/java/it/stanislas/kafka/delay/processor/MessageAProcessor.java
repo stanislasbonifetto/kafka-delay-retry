@@ -1,7 +1,7 @@
-package it.stanislas.kafka.delay;
+package it.stanislas.kafka.delay.processor;
 
-import it.stanislas.kafka.delay.model.MessageA;
-import it.stanislas.kafka.delay.model.MessageB;
+import it.stanislas.kafka.delay.processor.model.MessageA;
+import it.stanislas.kafka.delay.processor.model.MessageB;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.processor.Processor;
 import org.apache.kafka.streams.processor.ProcessorContext;

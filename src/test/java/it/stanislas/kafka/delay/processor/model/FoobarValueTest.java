@@ -1,4 +1,4 @@
-package it.stanislas.kafka.delay.model;
+package it.stanislas.kafka.delay.processor.model;
 
 import org.junit.jupiter.api.Test;
 

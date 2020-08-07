@@ -33,7 +33,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0")
 
     annotationProcessor("org.immutables:value:$immutablesVersion")
-    compileOnly("org.immutables:value:$immutablesVersion")
+    compileOnly("org.immutables:value-annotations:$immutablesVersion")
 
     testImplementation("org.junit.jupiter:junit-jupiter:$junitJupiterVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")

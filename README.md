@@ -28,7 +28,7 @@ The idea is to have 3 topics:
 Class to look in to: 
  * [DelayStream.java](src/main/java/it/stanislas/kafka/delay/streamjoin/DelayStream.java) Stream definition
  * [ClockProducer.java](src/main/java/it/stanislas/kafka/delay/streamjoin/ClockProducer.java) clock producer that emit an event every second
- * [DelayWithStreamsTest.java](src/test/java/it/stanislas/kafka/delay/DelayWithStreamsTest.java) Test on the solution
+ * [DelayWithStreamsTest.java](src/test/java/it/stanislas/kafka/delay/streamjoin/DelayWithStreamsTest.java) Test on the solution
 
 The solution has some limitation.
 

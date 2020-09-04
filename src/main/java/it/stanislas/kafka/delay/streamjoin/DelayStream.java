@@ -41,7 +41,7 @@ public class DelayStream {
         KStream<String, String> delayedStream = builder.stream(delayTopicName, Consumed.with(Serdes.String(), Serdes.String()));
 
         //group by key the Clock stream because for resilience multiple producers send a clock event
-        KStream<String, String> groupByClockStream = clockStream.groupByKey().reduce((value1, value2) -> value1).toStream();
+        KStream<String, String> groupByClockStream = clockStream.groupByKey().reduce((clock1, clock2) -> clock1).toStream();
 
         delayedStream.join(
                     groupByClockStream,

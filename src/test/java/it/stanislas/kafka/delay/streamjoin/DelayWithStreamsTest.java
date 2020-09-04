@@ -1,9 +1,6 @@
 package it.stanislas.kafka.delay.streamjoin;
 
 import io.reactivex.rxjava3.core.Observable;
-import it.stanislas.kafka.delay.streamjoin.ClockProducer;
-import it.stanislas.kafka.delay.streamjoin.DelayProducer;
-import it.stanislas.kafka.delay.streamjoin.DelayStream;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.*;
@@ -18,7 +15,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,7 +31,7 @@ public class DelayWithStreamsTest {
     @Container
     final static KafkaContainer KAFKA_CONTAINER = new KafkaContainer();
 
-  static String bootstrapServers;
+    static String bootstrapServers;
 //    final static String bootstrapServers = "localhost:9092";
 
     // topic-delay
@@ -46,6 +42,8 @@ public class DelayWithStreamsTest {
 
     // topic-fired
     final static String FIRED_TOPIC_NAME = "fired";
+
+    final ClockKafkaKeyGenerator clockKafkaKeyGenerator = new ClockKafkaKeyGenerator();
 
     @BeforeAll
     public static void setup() {
@@ -76,9 +74,9 @@ public class DelayWithStreamsTest {
         //given
         final DelayStream delayStream = DelayStream.buildAndStart(bootstrapServers, DELAY_TOPIC_NAME, CLOCK_TOPIC_NAME, FIRED_TOPIC_NAME);
 
-        final ClockProducer clockProducer = ClockProducer.buildAndStart(bootstrapServers, CLOCK_TOPIC_NAME);
+        final ClockProducer clockProducer = ClockProducer.buildAndStart(bootstrapServers, CLOCK_TOPIC_NAME, clockKafkaKeyGenerator);
 
-        final DelayProducer delayProducer = DelayProducer.build(bootstrapServers, DELAY_TOPIC_NAME);
+        final DelayProducer delayProducer = DelayProducer.build(bootstrapServers, DELAY_TOPIC_NAME, clockKafkaKeyGenerator);
 
         final Consumer firedConsumer = buildKafkaConsumer(bootstrapServers, FIRED_TOPIC_NAME);
 
@@ -128,13 +126,12 @@ public class DelayWithStreamsTest {
     @Test
     @Disabled //this test is to just run and print it doesn't any validation
     public void delay_messages() {
-
         //given
         final DelayStream delayStream = DelayStream.buildAndStart(bootstrapServers, DELAY_TOPIC_NAME, CLOCK_TOPIC_NAME, FIRED_TOPIC_NAME);
 
-        final ClockProducer clockProducer = ClockProducer.buildAndStart(bootstrapServers, CLOCK_TOPIC_NAME);
+        final ClockProducer clockProducer = ClockProducer.buildAndStart(bootstrapServers, CLOCK_TOPIC_NAME, clockKafkaKeyGenerator);
 
-        final DelayProducer delayProducer = DelayProducer.build(bootstrapServers, DELAY_TOPIC_NAME);
+        final DelayProducer delayProducer = DelayProducer.build(bootstrapServers, DELAY_TOPIC_NAME, clockKafkaKeyGenerator);
 
         final Consumer firedConsumer = buildKafkaConsumer(bootstrapServers, FIRED_TOPIC_NAME);
 

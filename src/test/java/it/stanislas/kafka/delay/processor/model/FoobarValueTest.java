@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class FoobarValueTest {
 
     @Test
-    public void testAnimal() {
+    public void testImmutable() {
         FoobarValue value = ImmutableFoobarValue.builder()
                 .foo(2)
                 .bar("Bar")

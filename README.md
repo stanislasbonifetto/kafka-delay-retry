@@ -26,9 +26,9 @@ The idea is to have 3 topics:
 | fired | string | string | `my_key_1` -> `my_message_1` |
 
 Class to look in to: 
- * [DelayStream.java](src/main/java/it/stanislas/kafka/delay/streamjoin/DelayStream.java) Stream definition
- * [ClockProducer.java](src/main/java/it/stanislas/kafka/delay/streamjoin/ClockProducer.java) clock producer that emit an event every second
- * [DelayWithStreamsTest.java](src/test/java/it/stanislas/kafka/delay/streamjoin/DelayWithStreamsTest.java) Test on the solution
+ * [DelayStream.kt](src/main/kotlin/it/stanislas/kafka/delay/streamjoin/DelayStream.kt) Stream definition
+ * [ClockProducer.kt](src/main/kotlin/it/stanislas/kafka/delay/streamjoin/ClockProducer.kt) clock producer that emit an event every second
+ * [DelayWithStreamsTest.kt](src/test/kotlin/it/stanislas/kafka/delay/streamjoin/DelayWithStreamsTest.kt) Test on the solution
 
 The solution has some limitation.
 

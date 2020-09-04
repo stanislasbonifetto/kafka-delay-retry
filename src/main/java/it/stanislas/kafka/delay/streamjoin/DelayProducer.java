@@ -1,16 +1,11 @@
 package it.stanislas.kafka.delay.streamjoin;
 
-import io.reactivex.rxjava3.core.Observable;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import static it.stanislas.kafka.delay.streamjoin.ProducerFactory.buildProducer;
 
@@ -34,22 +29,6 @@ public class DelayProducer {
             final ClockKafkaKeyGenerator clockKafkaKeyGenerator
     ) {
         return new DelayProducer(buildProducer(bootstrapServers), delayTopicName, clockKafkaKeyGenerator);
-    }
-
-    public void sendAMessageDelayedOneMinutesEachThenSeconds() {
-        Observable
-                .interval(10, TimeUnit.SECONDS)
-                .doOnNext(n -> {
-//                .doOnNext(t -> {
-//                    IntStream.range(0, 10)
-//                            .forEach(n -> {
-                                final Instant now = Instant.now();
-                                final Instant fireAt = now.plus(1, ChronoUnit.MINUTES);
-                                final String value = String.valueOf(n);
-                                final Future<RecordMetadata> recordMetadataFeature = sendAt(value, fireAt);
-//                            });
-                })
-                .subscribe();
     }
 
     public Future<RecordMetadata> sendAt(final String message, final Instant fireAt) {

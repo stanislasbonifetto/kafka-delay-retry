@@ -4,6 +4,7 @@ import io.reactivex.rxjava3.core.Observable;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.consumer.*;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.streams.StreamsConfig;
 import org.junit.jupiter.api.BeforeAll;
@@ -20,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Properties;
 import java.util.UUID;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -136,7 +138,7 @@ public class DelayWithStreamsTest {
         final Consumer firedConsumer = buildKafkaConsumer(bootstrapServers, FIRED_TOPIC_NAME);
 
         //when
-        delayProducer.sendAMessageDelayedOneMinutesEachThenSeconds();
+        sendAMessageDelayedOneMinutesEachThenSeconds(delayProducer);
 
         //then
         Observable
@@ -170,6 +172,22 @@ public class DelayWithStreamsTest {
         // Subscribe to the topic.
         consumer.subscribe(Collections.singletonList(topicName));
         return consumer;
+    }
+
+    public void sendAMessageDelayedOneMinutesEachThenSeconds(final DelayProducer delayProducer) {
+        Observable
+                .interval(10, TimeUnit.SECONDS)
+                .doOnNext(n -> {
+//                .doOnNext(t -> {
+//                    IntStream.range(0, 10)
+//                            .forEach(n -> {
+                    final Instant now = Instant.now();
+                    final Instant fireAt = now.plus(1, ChronoUnit.MINUTES);
+                    final String value = String.valueOf(n);
+                    final Future<RecordMetadata> recordMetadataFeature = delayProducer.sendAt(value, fireAt);
+//                            });
+                })
+                .subscribe();
     }
 
 }

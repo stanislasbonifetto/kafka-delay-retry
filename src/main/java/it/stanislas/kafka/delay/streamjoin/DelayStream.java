@@ -9,10 +9,6 @@ import org.apache.kafka.streams.kstream.StreamJoined;
 
 import java.time.Duration;
 import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class DelayStream {
 
@@ -31,7 +27,7 @@ public class DelayStream {
     }
 
 
-    protected static KafkaStreams buildStream(final String bootstrapServers, final String delayTopicName, final String tickTocTopicName, final String firedTopicName) {
+    protected static KafkaStreams buildStream(final String bootstrapServers, final String delayTopicName, final String clockTopicName, final String firedTopicName) {
 
         final Properties config = new Properties();
         config.put(StreamsConfig.APPLICATION_ID_CONFIG, "delay-stream");
@@ -41,7 +37,7 @@ public class DelayStream {
 
         StreamsBuilder builder = new StreamsBuilder();
 
-        KStream<String, String> clockStream = builder.stream(tickTocTopicName, Consumed.with(Serdes.String(), Serdes.String()));
+        KStream<String, String> clockStream = builder.stream(clockTopicName, Consumed.with(Serdes.String(), Serdes.String()));
         KStream<String, String> delayedStream = builder.stream(delayTopicName, Consumed.with(Serdes.String(), Serdes.String()));
 
         //group by key the Clock stream because for resilience multiple producers send a clock event

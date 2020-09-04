@@ -1,12 +1,14 @@
 package it.stanislas.kafka.delay.streamjoin;
 
 import io.reactivex.rxjava3.core.Observable;
+import io.reactivex.rxjava3.disposables.Disposable;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.IntStream;
 
 import static it.stanislas.kafka.delay.streamjoin.ProducerFactory.buildProducer;
 
@@ -15,6 +17,7 @@ public class ClockProducer {
     private final KafkaProducer<String, String> kafkaProducer;
     private final String clockTopicName;
     private final ClockKafkaKeyGenerator clockKafkaKeyGenerator;
+    private final int numberOfInstances = 2;
 
     protected ClockProducer(final KafkaProducer<String, String> kafkaProducer,
                             final String clockTopicName,
@@ -44,22 +47,15 @@ public class ClockProducer {
     }
 
     public void start() {
+        IntStream.range(0, numberOfInstances)
+                .forEach(i -> sendTickEachSecond());
+    }
 
-        Observable
+    private Disposable sendTickEachSecond() {
+        return Observable
                 .interval(1, TimeUnit.SECONDS)
-                .doOnNext(n -> {
-                    sendTick();
-                })
+                .doOnNext(n -> sendTick())
                 .subscribe();
-
-        //simulate distributed clock producer
-        Observable
-                .interval(1, TimeUnit.SECONDS)
-                .doOnNext(n -> {
-                    sendTick();
-                })
-                .subscribe();
-
     }
 
     private void sendTick() {

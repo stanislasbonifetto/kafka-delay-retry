@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit
 
 @Testcontainers
 class DelayWithStreamsTest {
-    private val clockKafkaKeyGenerator = ClockKafkaKeyGenerator()
+    private val clockKafkaKeyGenerator = ClockKafkaKeyGenerator
 
     @Test
     fun delay_a_message() {

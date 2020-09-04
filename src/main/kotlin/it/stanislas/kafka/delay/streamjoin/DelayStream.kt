@@ -12,7 +12,7 @@ import java.time.Duration
 import java.util.*
 
 
-class DelayStream constructor(private val kafkaStreams: KafkaStreams) {
+class DelayStream (private val kafkaStreams: KafkaStreams) {
 
     companion object {
         fun buildAndStart(
@@ -41,10 +41,10 @@ class DelayStream constructor(private val kafkaStreams: KafkaStreams) {
         }
 
         fun buildStream(
-            bootstrapServers: String?,
-            delayTopicName: String?,
-            clockTopicName: String?,
-            firedTopicName: String?
+            bootstrapServers: String,
+            delayTopicName: String,
+            clockTopicName: String,
+            firedTopicName: String
         ): KafkaStreams {
             val config = Properties()
             config[StreamsConfig.APPLICATION_ID_CONFIG] = "delay-stream"
@@ -63,10 +63,10 @@ class DelayStream constructor(private val kafkaStreams: KafkaStreams) {
 
             //group by key the Clock stream because for resilience multiple producers send a clock event
             val groupByClockStream = clockStream.groupByKey()
-                .reduce { clock1: String, clock2: String? -> clock1 }.toStream()
+                .reduce { clock1, _ -> clock1 }.toStream()
             delayedStream.join(
                 groupByClockStream,
-                { delayedValue: String, clockValue: String? -> delayedValue },  //A dey window to allow to delay event at max 1 day
+                { delayedValue, _ -> delayedValue },  //A dey window to allow to delay event at max 1 day
                 JoinWindows.of(Duration.ofDays(1)),
                 StreamJoined.with(
                     Serdes.String(),
@@ -74,7 +74,7 @@ class DelayStream constructor(private val kafkaStreams: KafkaStreams) {
                     Serdes.String()
                 )
             )
-                .map { key: String?, value: String ->
+                .map { _, value ->
                     val values = value.split(":").toTypedArray()
                     val delayKey = values[0]
                     val delayMessage = values[1]

@@ -7,7 +7,7 @@ import java.time.Instant
 import java.util.concurrent.Future
 
 
-class DelayProducer constructor(
+class DelayProducer (
     private val kafkaProducer: KafkaProducer<String, String>,
     private val delayTopicName: String,
     private val clockKafkaKeyGenerator: ClockKafkaKeyGenerator

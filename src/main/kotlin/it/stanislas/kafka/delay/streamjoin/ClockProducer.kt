@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit
 import java.util.stream.IntStream
 
 
-class ClockProducer constructor(
+class ClockProducer (
     private val kafkaProducer: KafkaProducer<String, String>,
     private val clockTopicName: String,
     private val clockKafkaKeyGenerator: ClockKafkaKeyGenerator
